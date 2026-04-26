@@ -12,7 +12,7 @@ win = False
 r1_score = 0 
 r2_score = 0 
 text_font = font.SysFont('Arial', 20) 
-win_font = font.SysFont('Colibri', 50)
+win_font = font.SysFont('Calibri', 50)
 i = 0
 #Классы-classes
 class GameSp(sprite.Sprite):
