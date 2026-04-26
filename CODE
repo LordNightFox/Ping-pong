@@ -1,0 +1,100 @@
+from pygame import *
+import random
+font.init()
+window = display.set_mode((900,600))
+color_fon = (149,145,140)
+display.set_caption('Бадментон')
+window.fill(color_fon)
+game = True
+clock = time.Clock()
+FPS = 60
+win = False
+r1_score = 0 
+r2_score = 0 
+text_font = font.SysFont('Arial', 20) 
+win_font = font.SysFont('Colibri', 50)
+#Классы-classes
+class GameSp(sprite.Sprite):
+    def __init__(self, obgeckt_image, obgeckt_image_X, obgeckt_image_Y, obgeckt_x, obgeckt_y,speed_obgeckt):
+        super().__init__()
+        self.obgeckt_image_Y = obgeckt_image_Y
+        self.obgeckt_image_X = obgeckt_image_X
+        self.image = transform.scale(image.load(obgeckt_image), (obgeckt_image_X,obgeckt_image_Y))
+        self.speed = speed_obgeckt
+        self.rect = self.image.get_rect()
+        self.rect.x = obgeckt_x
+        self.rect.y = obgeckt_y
+        self.direction_x = 1
+        self.direction_y = 1
+
+    def reset(self):
+        window.blit(self.image,(self.rect.x,self.rect.y))
+class Player(GameSp):
+    def update1(self):
+        keys_pressed = key.get_pressed()
+        if keys_pressed[K_UP] and self.rect.y > 5:
+            self.rect.y -= self.speed
+        if keys_pressed[K_DOWN] and self.rect.y < 450:
+            self.rect.y += self.speed
+    def update2(self):
+        keys_pressed = key.get_pressed()
+        if keys_pressed[K_w] and self.rect.y > 5:
+            self.rect.y -= self.speed
+        if keys_pressed[K_s] and self.rect.y < 450:
+            self.rect.y += self.speed
+
+    def update3(self):
+        self.rect.x += self.speed * self.direction_x
+        self.rect.y += self.speed * self.direction_y
+        
+        if self.rect.x >= 910:
+            self.direction_x = -1
+            global r1_score
+            r1_score += 1 
+        elif self.rect.x <= -10:
+            global r2_score
+            r2_score += 1 
+            self.direction_x = 1
+        if self.rect.y >= 550:
+            self.direction_y = -1
+        elif self.rect.y <= 10:
+            self.direction_y = 1        
+
+
+#Критерии
+boll = Player('Ping_boll.png',75,75,350,250,5)
+rocket1 =Player('rocket.png',100,200,0,100,4)
+rocket2 =Player('rocket2.png',100,200,800,100,4)
+#Сама игра
+while game:
+    for e in event.get():
+        if e.type == QUIT:
+            game = False
+    if not win:
+        window.fill(color_fon)
+        rocket1.reset()
+        rocket1.update1()
+        rocket2.reset()
+        rocket2.update2()
+        if sprite.collide_rect(boll, rocket1):
+            boll.direction_x = 1 
+        if sprite.collide_rect(boll, rocket2):
+            boll.direction_x = -1
+        boll.reset()
+        boll.update3()
+        text = text_font.render('Очки л: ' + str(r1_score), True,(100,200,255))
+        window.blit(text,(300,0))
+        text = text_font.render('Очки п: ' + str(r2_score), True,(255,200,100))
+        window.blit(text,(500,0))
+        if r1_score == 3:
+            text = win_font.render('ЛЕВЫЙ ВЫИГРАЛ!', True, (219, 246, 202))
+            window.blit(text, (300, 120))
+            win = True
+            display.update()
+        if r2_score == 3:
+            text = win_font.render('ПРАВЫЙ ВЫИГРАЛ!', True, (36, 9, 53))
+            window.blit(text, (300, 120))
+            win = True
+            display.update()
+    display.update()
+    clock.tick(FPS)
