@@ -106,4 +106,3 @@ while game:
             boll.speed += 1
     display.update()
     clock.tick(FPS)
-    print(boll.speed)
